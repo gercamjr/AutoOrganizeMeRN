@@ -26,13 +26,17 @@ export const SIZES = {
 };
 
 export const FONTS = {
-  // We'll define actual font families after loading them
-  h1: { fontSize: SIZES.xxlarge, fontWeight: 'bold' },
-  h2: { fontSize: SIZES.xlarge, fontWeight: 'bold' },
-  h3: { fontSize: SIZES.large, fontWeight: 'bold' },
-  body1: { fontSize: SIZES.medium },
-  body2: { fontSize: SIZES.font },
-  body3: { fontSize: SIZES.small },
+  h1: { fontFamily: 'Orbitron-Bold', fontSize: SIZES.xxlarge },
+  h2: { fontFamily: 'Orbitron-SemiBold', fontSize: SIZES.xlarge },
+  h3: { fontFamily: 'Orbitron-Medium', fontSize: SIZES.large },
+  body1: { fontFamily: 'Orbitron-Regular', fontSize: SIZES.medium },
+  body2: { fontFamily: 'Orbitron-Regular', fontSize: SIZES.font },
+  body3: { fontFamily: 'Orbitron-Regular', fontSize: SIZES.small },
+  orbitronRegular: 'Orbitron-Regular',
+  orbitronMedium: 'Orbitron-Medium',
+  orbitronSemiBold: 'Orbitron-SemiBold',
+  orbitronBold: 'Orbitron-Bold',
+  orbitronBlack: 'Orbitron-Black',
 };
 
 const appTheme = { COLORS, SIZES, FONTS };

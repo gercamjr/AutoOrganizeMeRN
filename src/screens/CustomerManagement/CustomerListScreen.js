@@ -72,12 +72,24 @@ const CustomerListScreen = () => {
         <Text style={styles.customerDetail}>Email: {item.email || 'N/A'}</Text>
         <Text style={styles.customerDetail}>Address: {item.address || 'N/A'}</Text>
       </TouchableOpacity>
-      <AppButton
-        title="Delete"
-        onPress={() => handleDeleteCustomer(item.id)}
-        style={styles.deleteButton}
-        textStyle={styles.deleteButtonText}
-      />
+      <View style={styles.buttonContainer}>
+        <AppButton
+          title="View Vehicles"
+          onPress={() => navigation.navigate('VehicleList', { customerId: item.id, customerName: item.name })}
+          style={styles.actionButton}
+          textStyle={styles.actionButtonText}
+          variant="info" // Or your desired variant
+          size="small"
+        />
+        <AppButton
+          title="Delete"
+          onPress={() => handleDeleteCustomer(item.id)}
+          style={styles.actionButton}
+          textStyle={styles.actionButtonText}
+          variant="error"
+          size="small"
+        />
+      </View>
     </Card>
   );
 
@@ -142,9 +154,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
   customerCard: {
-    marginBottom: SIZES.medium, // Changed from SIZES.radius to SIZES.medium
+    marginBottom: SIZES.medium,
+    // Removed padding here if Card component handles it, or adjust as needed
   },
   cardContent: {
+    padding: SIZES.padding, // Add padding here if not in Card
     flex: 1,
   },
   customerName: {
@@ -159,15 +173,25 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary, // Changed from COLORS.lightGray
     marginBottom: SIZES.base / 2,
   },
-  deleteButton: {
-    marginTop: SIZES.base,
-    backgroundColor: COLORS.danger,
-    paddingVertical: SIZES.base,
+  deleteButton: { // This style might be redundant now if using actionButton
+    // marginTop: SIZES.base,
   },
-  deleteButtonText: {
-    color: COLORS.white,
-    fontFamily: FONTS.semiBold,
-    textAlign: 'center',
+  deleteButtonText: { // This style might be redundant now if using actionButtonText
+    // fontFamily: FONTS.orbitronSemiBold,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around', // Or 'flex-end', 'space-between'
+    paddingHorizontal: SIZES.padding,
+    paddingBottom: SIZES.padding,
+  },
+  actionButton: {
+    marginHorizontal: SIZES.base / 2, // Add some spacing between buttons
+    flex: 1, // Make buttons take equal width if desired
+  },
+  actionButtonText: {
+    fontFamily: FONTS.orbitronSemiBold,
+    // color: COLORS.white, // Handled by AppButton variant
   },
   noCustomersText: {
     textAlign: 'center',

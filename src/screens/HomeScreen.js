@@ -19,8 +19,20 @@ const HomeScreen = () => {
           style={styles.button}
           textStyle={styles.buttonText}
         />
+        <AppButton 
+          title="View All Vehicles"
+          onPress={() => navigation.navigate('AllVehiclesList')} // Navigate to AllVehiclesListScreen
+          style={styles.button}
+          textStyle={styles.buttonText}
+        />
+        <AppButton 
+          title="Manage Tasks"
+          onPress={() => navigation.navigate('TaskList')} // Navigate to TaskListScreen
+          style={styles.button}
+          textStyle={styles.buttonText}
+        />
         {/* Add more buttons for other features later */}
-        {/* e.g., Manage Tasks, Manage Invoices, etc. */}
+        {/* e.g., Manage Invoices, etc. */}
       </View>
     </View>
   );

@@ -4,6 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import CustomerListScreen from '../screens/CustomerManagement/CustomerListScreen';
 import AddEditCustomerScreen from '../screens/CustomerManagement/AddEditCustomerScreen';
+import VehicleListScreen from '../screens/VehicleManagement/VehicleListScreen';
+import AddEditVehicleScreen from '../screens/VehicleManagement/AddEditVehicleScreen';
+import AllVehiclesListScreen from '../screens/VehicleManagement/AllVehiclesListScreen'; // Added
+import TaskListScreen from '../screens/TaskManagement/TaskListScreen'; // Added
+import AddEditTaskScreen from '../screens/TaskManagement/AddEditTaskScreen'; // Added
 import { COLORS, FONTS } from '../constants/theme';
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +43,36 @@ const AppNavigator = () => {
           component={AddEditCustomerScreen}
           options={({ route }) => ({
             title: route.params?.customerId ? 'Edit Customer' : 'Add Customer',
+          })}
+        />
+        <Stack.Screen
+          name="VehicleList"
+          component={VehicleListScreen}
+          options={({ route }) => ({
+            title: route.params?.customerName ? `${route.params.customerName}'s Vehicles` : 'Vehicles',
+          })}
+        />
+        <Stack.Screen
+          name="AddEditVehicle"
+          component={AddEditVehicleScreen}
+          // Title for this screen is set dynamically within the component itself
+        />
+        <Stack.Screen // Added AllVehiclesListScreen
+          name="AllVehiclesList"
+          component={AllVehiclesListScreen}
+          options={{ title: 'All Vehicles' }}
+        />
+        {/* Task Management Screens */}
+        <Stack.Screen
+          name="TaskList"
+          component={TaskListScreen}
+          options={{ title: 'Tasks' }}
+        />
+        <Stack.Screen
+          name="AddEditTask"
+          component={AddEditTaskScreen}
+          options={({ route }) => ({
+            title: route.params?.taskId ? 'Edit Task' : 'Add Task',
           })}
         />
         {/* Add other screens here as we build them */}

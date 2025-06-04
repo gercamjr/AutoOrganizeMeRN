@@ -7,7 +7,16 @@ const dbInstancePromise = SQLite.openDatabaseAsync("autoorganizeme.db");
 
 // Helper to get the database instance
 async function getDb() {
-  return dbInstancePromise; // The promise itself resolves to the db instance
+  try {
+    const db = await dbInstancePromise;
+    if (!db) {
+      throw new Error("Database instance is null");
+    }
+    return db;
+  } catch (error) {
+    console.error("Failed to get database instance:", error);
+    throw new Error(`Database connection failed: ${error.message}`);
+  }
 }
 
 export const initDatabase = async () => {
@@ -31,12 +40,31 @@ export const initDatabase = async () => {
       console.log("Tasks table checked/created.");
 
       await db.execAsync(
-        "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, laborCosts REAL, paymentStatus TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
+        "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, invoiceNumber TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, paymentStatus TEXT, notes TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
       );
       console.log("Invoices table checked/created.");
 
+      // Migration for existing invoices table - add missing columns if they don't exist
+      try {
+        await db.execAsync(
+          "ALTER TABLE invoices ADD COLUMN invoiceNumber TEXT;"
+        );
+        console.log("Added invoiceNumber column to invoices table.");
+      } catch (error) {
+        // Column likely already exists, ignore
+        console.log("invoiceNumber column already exists or table is new.");
+      }
+
+      try {
+        await db.execAsync("ALTER TABLE invoices ADD COLUMN notes TEXT;");
+        console.log("Added notes column to invoices table.");
+      } catch (error) {
+        // Column likely already exists, ignore
+        console.log("notes column already exists or table is new.");
+      }
+
       await db.execAsync(
-        "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity INTEGER, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
+        "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity REAL, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
       );
       console.log("Invoice items table checked/created.");
 
@@ -227,12 +255,29 @@ export const addVehicle = async (vehicle) => {
 };
 
 export const getVehiclesForCustomer = async (customerId) => {
+  if (!customerId) {
+    console.error("getVehiclesForCustomer: customerId is null or undefined");
+    throw new Error("Customer ID is required");
+  }
+
   const db = await getDb();
+  if (!db) {
+    console.error("getVehiclesForCustomer: Database connection is null");
+    throw new Error("Database connection failed");
+  }
+
   try {
-    return await db.getAllAsync(
+    console.log(
+      `getVehiclesForCustomer: Loading vehicles for customer ${customerId}`
+    );
+    const result = await db.getAllAsync(
       "SELECT * FROM vehicles WHERE customerId = ? ORDER BY make ASC, model ASC;",
       [customerId]
     );
+    console.log(
+      `getVehiclesForCustomer: Found ${result.length} vehicles for customer ${customerId}`
+    );
+    return result;
   } catch (error) {
     console.error(
       `Error getting vehicles for customer id ${customerId}:`,
@@ -555,3 +600,249 @@ export const deleteTask = async (id) => {
     throw error;
   }
 };
+
+// Invoice CRUD Operations
+export const addInvoice = async (invoice) => {
+  const db = await getDb();
+  const newInvoiceId = invoice.id || uuidv4();
+  try {
+    await db.withTransactionAsync(async () => {
+      const result = await db.runAsync(
+        "INSERT INTO invoices (id, customerId, taskId, invoiceNumber, issueDate, dueDate, totalAmount, paymentStatus, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+        [
+          newInvoiceId,
+          invoice.customerId,
+          invoice.taskId, // Optional: link to a specific task
+          invoice.invoiceNumber,
+          invoice.issueDate,
+          invoice.dueDate,
+          invoice.totalAmount,
+          invoice.paymentStatus,
+          invoice.notes,
+        ]
+      );
+      console.log(
+        `[database.js] addInvoice: Invoice header added with ID ${newInvoiceId}, changes: ${result.changes}`
+      );
+      if (result.changes === 0)
+        throw new Error("Failed to insert invoice header.");
+
+      for (const item of invoice.lineItems) {
+        const newItemId = item.id || uuidv4();
+        await db.runAsync(
+          "INSERT INTO invoice_items (id, invoiceId, description, quantity, unitPrice, totalPrice) VALUES (?, ?, ?, ?, ?, ?);",
+          [
+            newItemId,
+            newInvoiceId,
+            item.description,
+            item.quantity,
+            item.unitPrice,
+            item.quantity * item.unitPrice,
+          ]
+        );
+      }
+      console.log(
+        `[database.js] addInvoice: Added ${invoice.lineItems.length} line items for invoice ${newInvoiceId}`
+      );
+    });
+    return newInvoiceId;
+  } catch (error) {
+    console.error("[database.js] Error adding invoice:", error);
+    throw error;
+  }
+};
+
+export const getInvoices = async (filters = {}) => {
+  const db = await getDb();
+  try {
+    let query = `
+      SELECT 
+        i.id, i.invoiceNumber, i.issueDate, i.dueDate, i.totalAmount, i.paymentStatus, i.notes,
+        i.customerId, c.name AS customerName,
+        i.taskId, t.title AS taskTitle
+      FROM invoices i
+      JOIN customers c ON i.customerId = c.id
+      LEFT JOIN tasks t ON i.taskId = t.id
+    `;
+    const queryParams = [];
+    const whereClauses = [];
+
+    if (filters.customerId) {
+      whereClauses.push("i.customerId = ?");
+      queryParams.push(filters.customerId);
+    }
+    if (filters.paymentStatus) {
+      whereClauses.push("i.paymentStatus = ?");
+      queryParams.push(filters.paymentStatus);
+    }
+    // Add more filters as needed (e.g., date range)
+
+    if (whereClauses.length > 0) {
+      query += " WHERE " + whereClauses.join(" AND ");
+    }
+
+    query += " ORDER BY i.issueDate DESC, i.invoiceNumber DESC;";
+
+    console.log("[database.js] getInvoices query:", query, queryParams);
+    const invoices = await db.getAllAsync(query, queryParams);
+
+    // For each invoice, fetch its line items
+    for (const invoice of invoices) {
+      invoice.lineItems = await db.getAllAsync(
+        "SELECT * FROM invoice_items WHERE invoiceId = ? ORDER BY id;",
+        [invoice.id]
+      );
+    }
+    return invoices;
+  } catch (error) {
+    console.error("[database.js] Error getting invoices:", error);
+    throw error;
+  }
+};
+
+export const getInvoiceById = async (id) => {
+  const db = await getDb();
+  try {
+    const query = `
+      SELECT 
+        i.id, i.invoiceNumber, i.issueDate, i.dueDate, i.totalAmount, i.paymentStatus, i.notes,
+        i.customerId, c.name AS customerName,
+        i.taskId, t.title AS taskTitle
+      FROM invoices i
+      JOIN customers c ON i.customerId = c.id
+      LEFT JOIN tasks t ON i.taskId = t.id
+      WHERE i.id = ?;
+    `;
+    const invoice = await db.getFirstAsync(query, [id]);
+    if (invoice) {
+      invoice.lineItems = await db.getAllAsync(
+        "SELECT * FROM invoice_items WHERE invoiceId = ? ORDER BY id;",
+        [id]
+      );
+    }
+    return invoice;
+  } catch (error) {
+    console.error(`Error getting invoice by id ${id}:`, error);
+    throw error;
+  }
+};
+
+export const updateInvoice = async (id, invoice) => {
+  const db = await getDb();
+  try {
+    let changes = 0;
+    await db.withTransactionAsync(async () => {
+      const result = await db.runAsync(
+        "UPDATE invoices SET customerId = ?, taskId = ?, invoiceNumber = ?, issueDate = ?, dueDate = ?, totalAmount = ?, paymentStatus = ?, notes = ? WHERE id = ?;",
+        [
+          invoice.customerId,
+          invoice.taskId,
+          invoice.invoiceNumber,
+          invoice.issueDate,
+          invoice.dueDate,
+          invoice.totalAmount,
+          invoice.paymentStatus,
+          invoice.notes,
+          id,
+        ]
+      );
+      changes = result.changes;
+      console.log(
+        `[database.js] updateInvoice: Invoice header ${id} updated, changes: ${changes}`
+      );
+
+      // Simple approach: Delete existing items and re-add.
+      // More complex: diff and update/insert/delete selectively.
+      await db.runAsync("DELETE FROM invoice_items WHERE invoiceId = ?;", [id]);
+      console.log(
+        `[database.js] updateInvoice: Deleted existing line items for invoice ${id}`
+      );
+
+      for (const item of invoice.lineItems) {
+        const newItemId = item.id || uuidv4(); // Allow existing items to keep their ID if provided, or generate new
+        await db.runAsync(
+          "INSERT INTO invoice_items (id, invoiceId, description, quantity, unitPrice, totalPrice) VALUES (?, ?, ?, ?, ?, ?);",
+          [
+            newItemId,
+            id, // Use existing invoice ID
+            item.description,
+            item.quantity,
+            item.unitPrice,
+            item.quantity * item.unitPrice,
+          ]
+        );
+      }
+      console.log(
+        `[database.js] updateInvoice: Re-added ${invoice.lineItems.length} line items for invoice ${id}`
+      );
+    });
+    return changes; // Return changes from invoice header update
+  } catch (error) {
+    console.error(`Error updating invoice id ${id}:`, error);
+    throw error;
+  }
+};
+
+export const deleteInvoice = async (id) => {
+  const db = await getDb();
+  try {
+    let totalChanges = 0;
+    await db.withTransactionAsync(async () => {
+      // Delete invoice items first
+      await db.runAsync("DELETE FROM invoice_items WHERE invoiceId = ?;", [id]);
+      console.log(
+        `[database.js] deleteInvoice: Deleted line items for invoice ${id}`
+      );
+
+      // Then delete the invoice itself
+      const result = await db.runAsync("DELETE FROM invoices WHERE id = ?;", [
+        id,
+      ]);
+      totalChanges = result.changes;
+      console.log(
+        `[database.js] deleteInvoice: Deleted invoice ${id}, changes: ${totalChanges}`
+      );
+    });
+    return totalChanges;
+  } catch (error) {
+    console.error(`Error deleting invoice id ${id}:`, error);
+    throw error;
+  }
+};
+
+// Update the initDatabase to reflect new fields in invoices table
+// The existing initDatabase function already creates the invoices and invoice_items tables.
+// We need to ensure the invoices table schema matches the fields used in addInvoice/updateInvoice.
+// The current schema is:
+// "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, laborCosts REAL, paymentStatus TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
+// New fields used: invoiceNumber, notes. Field to remove: laborCosts (as it's part of line items).
+
+// Let's adjust the schema. Since altering tables in SQLite has limitations,
+// for development, it's often easier to drop and recreate or ensure new fields are nullable / have defaults.
+// For this iteration, we'll assume new fields are added and `laborCosts` might be unused or repurposed.
+// A proper migration strategy would be needed for production apps.
+
+// The schema in initDatabase for invoices should be:
+// "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, invoiceNumber TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, paymentStatus TEXT, notes TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
+// And for invoice_items:
+// "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity REAL, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
+// Note: Changed quantity to REAL in invoice_items to align with typical usage, though INTEGER was in original. Let's stick to REAL for flexibility.
+
+// The initDatabase function needs to be updated with the correct schema.
+// Since I cannot re-declare initDatabase, I will provide the corrected table creation lines.
+// The user will need to replace the existing CREATE TABLE IF NOT EXISTS for invoices and invoice_items in their initDatabase function.
+
+/*
+Corrected schema for initDatabase:
+
+await db.execAsync(
+  "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, invoiceNumber TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, paymentStatus TEXT, notes TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
+);
+console.log("Invoices table checked/created (updated schema).");
+
+await db.execAsync(
+  "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity REAL, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
+);
+console.log("Invoice items table checked/created (updated schema).");
+
+*/

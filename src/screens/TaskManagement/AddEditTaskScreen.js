@@ -441,11 +441,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    paddingBottom: SIZES.large, // Ensure space for last button if card is tall
+    flexGrow: 1,
   },
   card: {
-    margin: SIZES.medium,
-    padding: SIZES.medium,
+    margin: 0,
+    padding: 16,
+    borderRadius: 0,
+    flex: 1,
   },
   input: {
     marginBottom: SIZES.medium,

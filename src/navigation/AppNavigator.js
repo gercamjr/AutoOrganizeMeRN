@@ -14,13 +14,13 @@ const AppNavigator = () => {
       <Stack.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: COLORS.dark,
+            backgroundColor: COLORS.background, // Changed from COLORS.dark
           },
-          headerTintColor: COLORS.light,
+          headerTintColor: COLORS.text, // Changed from COLORS.light to COLORS.text
           headerTitleStyle: {
             fontFamily: FONTS.bold,
           },
-          contentStyle: { backgroundColor: COLORS.dark },
+          contentStyle: { backgroundColor: COLORS.background }, // Changed from COLORS.dark
         }}
       >
         <Stack.Screen

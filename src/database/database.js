@@ -810,39 +810,126 @@ export const deleteInvoice = async (id) => {
   }
 };
 
-// Update the initDatabase to reflect new fields in invoices table
-// The existing initDatabase function already creates the invoices and invoice_items tables.
-// We need to ensure the invoices table schema matches the fields used in addInvoice/updateInvoice.
-// The current schema is:
-// "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, laborCosts REAL, paymentStatus TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
-// New fields used: invoiceNumber, notes. Field to remove: laborCosts (as it's part of line items).
+// Photo CRUD Operations
+export const addPhoto = async (photo) => {
+  const db = await getDb();
+  console.log(
+    "[database.js] addPhoto: Attempting to add photo:",
+    JSON.stringify(photo)
+  );
+  try {
+    const result = await db.runAsync(
+      "INSERT INTO photos (id, parentId, parentType, uri, notes) VALUES (?, ?, ?, ?, ?);",
+      [photo.id, photo.parentId, photo.parentType, photo.uri, photo.notes || ""]
+    );
+    console.log(
+      `[database.js] addPhoto: Photo added successfully with id ${photo.id}, insertId: ${result.lastInsertRowId}, changes: ${result.changes}`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error("Error adding photo:", error);
+    throw error;
+  }
+};
 
-// Let's adjust the schema. Since altering tables in SQLite has limitations,
-// for development, it's often easier to drop and recreate or ensure new fields are nullable / have defaults.
-// For this iteration, we'll assume new fields are added and `laborCosts` might be unused or repurposed.
-// A proper migration strategy would be needed for production apps.
+export const getPhotosByParent = async (parentId, parentType) => {
+  const db = await getDb();
+  console.log(
+    `[database.js] getPhotosByParent: Fetching photos for ${parentType} with id ${parentId}`
+  );
+  try {
+    const result = await db.getAllAsync(
+      "SELECT * FROM photos WHERE parentId = ? AND parentType = ? ORDER BY id;",
+      [parentId, parentType]
+    );
+    console.log(
+      `[database.js] getPhotosByParent: Found ${result.length} photos for ${parentType} ${parentId}`
+    );
+    return result;
+  } catch (error) {
+    console.error(
+      `Error fetching photos for ${parentType} ${parentId}:`,
+      error
+    );
+    throw error;
+  }
+};
 
-// The schema in initDatabase for invoices should be:
-// "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, invoiceNumber TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, paymentStatus TEXT, notes TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
-// And for invoice_items:
-// "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity REAL, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
-// Note: Changed quantity to REAL in invoice_items to align with typical usage, though INTEGER was in original. Let's stick to REAL for flexibility.
+export const getPhotoById = async (id) => {
+  const db = await getDb();
+  console.log(`[database.js] getPhotoById: Fetching photo with id ${id}`);
+  try {
+    const result = await db.getFirstAsync(
+      "SELECT * FROM photos WHERE id = ?;",
+      [id]
+    );
+    console.log(
+      `[database.js] getPhotoById: ${
+        result ? "Found" : "Not found"
+      } photo with id ${id}`
+    );
+    return result;
+  } catch (error) {
+    console.error(`Error fetching photo by id ${id}:`, error);
+    throw error;
+  }
+};
 
-// The initDatabase function needs to be updated with the correct schema.
-// Since I cannot re-declare initDatabase, I will provide the corrected table creation lines.
-// The user will need to replace the existing CREATE TABLE IF NOT EXISTS for invoices and invoice_items in their initDatabase function.
+export const updatePhoto = async (id, updates) => {
+  const db = await getDb();
+  console.log(
+    `[database.js] updatePhoto: Updating photo ${id} with:`,
+    JSON.stringify(updates)
+  );
+  try {
+    const result = await db.runAsync(
+      "UPDATE photos SET notes = ? WHERE id = ?;",
+      [updates.notes || "", id]
+    );
+    console.log(
+      `[database.js] updatePhoto: Photo ${id} updated, changes: ${result.changes}`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error(`Error updating photo ${id}:`, error);
+    throw error;
+  }
+};
 
-/*
-Corrected schema for initDatabase:
+export const deletePhoto = async (id) => {
+  const db = await getDb();
+  console.log(`[database.js] deletePhoto: Deleting photo with id ${id}`);
+  try {
+    const result = await db.runAsync("DELETE FROM photos WHERE id = ?;", [id]);
+    console.log(
+      `[database.js] deletePhoto: Photo ${id} deleted, changes: ${result.changes}`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error(`Error deleting photo ${id}:`, error);
+    throw error;
+  }
+};
 
-await db.execAsync(
-  "CREATE TABLE IF NOT EXISTS invoices (id TEXT PRIMARY KEY NOT NULL, customerId TEXT NOT NULL, taskId TEXT, invoiceNumber TEXT, issueDate TEXT, dueDate TEXT, totalAmount REAL, paymentStatus TEXT, notes TEXT, FOREIGN KEY (customerId) REFERENCES customers(id), FOREIGN KEY (taskId) REFERENCES tasks(id));"
-);
-console.log("Invoices table checked/created (updated schema).");
-
-await db.execAsync(
-  "CREATE TABLE IF NOT EXISTS invoice_items (id TEXT PRIMARY KEY NOT NULL, invoiceId TEXT NOT NULL, description TEXT, quantity REAL, unitPrice REAL, totalPrice REAL, FOREIGN KEY (invoiceId) REFERENCES invoices(id));"
-);
-console.log("Invoice items table checked/created (updated schema).");
-
-*/
+export const deletePhotosByParent = async (parentId, parentType) => {
+  const db = await getDb();
+  console.log(
+    `[database.js] deletePhotosByParent: Deleting photos for ${parentType} with id ${parentId}`
+  );
+  try {
+    const result = await db.runAsync(
+      "DELETE FROM photos WHERE parentId = ? AND parentType = ?;",
+      [parentId, parentType]
+    );
+    console.log(
+      `[database.js] deletePhotosByParent: Deleted ${result.changes} photos for ${parentType} ${parentId}`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error(
+      `Error deleting photos for ${parentType} ${parentId}:`,
+      error
+    );
+    throw error;
+  }
+};

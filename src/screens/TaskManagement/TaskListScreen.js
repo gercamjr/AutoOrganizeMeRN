@@ -257,13 +257,13 @@ const styles = StyleSheet.create({
   },
   taskTitle: {
     fontSize: SIZES.large,
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     color: COLORS.text,
     marginBottom: SIZES.extraSmall,
   },
   taskDetailText: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     marginBottom: SIZES.tiny,
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
     color: COLORS.white,
     paddingVertical: SIZES.tiny,
     paddingHorizontal: SIZES.small,
@@ -298,13 +298,13 @@ const styles = StyleSheet.create({
     marginTop: SIZES.medium,
     fontSize: SIZES.medium,
     color: COLORS.textSecondary,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
   },
   loadingText: {
     marginTop: SIZES.small,
     fontSize: SIZES.medium,
     color: COLORS.textSecondary,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     flex: 1, // Make buttons take equal width
   },
   actionButtonText: {
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
     // color: COLORS.white, // Handled by AppButton variant
   },
 });

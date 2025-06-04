@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     color: COLORS.textSecondary,
     marginBottom: SIZES.extraSmall,
     marginLeft: SIZES.tiny,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   pickerItem: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
   },
   saveButton: {
     marginTop: SIZES.large, // Keep or adjust from SIZES.large
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: COLORS.error,
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
   },
   centeredMessageContainer: {
     flex: 1,
@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SIZES.small,
     fontSize: SIZES.medium,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
   },
   pickerLoadingIndicator: {
@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: COLORS.primary,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     textAlign: "center",
     paddingVertical: SIZES.small,
     textDecorationLine: "underline",

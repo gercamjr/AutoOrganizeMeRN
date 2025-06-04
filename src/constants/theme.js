@@ -29,17 +29,17 @@ export const SIZES = {
 };
 
 export const FONTS = {
-  h1: { fontFamily: "Orbitron-Bold", fontSize: SIZES.xxlarge },
-  h2: { fontFamily: "Orbitron-SemiBold", fontSize: SIZES.xlarge },
-  h3: { fontFamily: "Orbitron-Medium", fontSize: SIZES.large },
-  body1: { fontFamily: "Orbitron-Regular", fontSize: SIZES.medium },
-  body2: { fontFamily: "Orbitron-Regular", fontSize: SIZES.font },
-  body3: { fontFamily: "Orbitron-Regular", fontSize: SIZES.small },
-  orbitronRegular: "Orbitron-Regular",
-  orbitronMedium: "Orbitron-Medium",
-  orbitronSemiBold: "Orbitron-SemiBold",
-  orbitronBold: "Orbitron-Bold",
-  orbitronBlack: "Orbitron-Black",
+  h1: { fontFamily: "Inter-Bold", fontSize: SIZES.xxlarge },
+  h2: { fontFamily: "Inter-SemiBold", fontSize: SIZES.xlarge },
+  h3: { fontFamily: "Inter-Medium", fontSize: SIZES.large },
+  body1: { fontFamily: "Inter-Regular", fontSize: SIZES.medium },
+  body2: { fontFamily: "Inter-Regular", fontSize: SIZES.font },
+  body3: { fontFamily: "Inter-Regular", fontSize: SIZES.small },
+  regular: "Inter-Regular",
+  medium: "Inter-Medium",
+  semiBold: "Inter-SemiBold",
+  bold: "Inter-Bold",
+  black: "Inter-Black",
 };
 
 const appTheme = { COLORS, SIZES, FONTS };

@@ -1,0 +1,75 @@
+# Auto Organize Me - Dual License
+
+Copyright (c) 2025 Auto Organize Me
+
+This project is dual-licensed under the following terms:
+
+## 1. Open Source License (for Development and Contributions)
+
+### MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+**IMPORTANT RESTRICTION**: This MIT License applies ONLY to:
+
+- Development and testing purposes
+- Contributing to this open source project
+- Educational and research use
+- Non-commercial derivative works
+
+**COMMERCIAL DISTRIBUTION EXCLUSION**: This MIT License does NOT grant rights to:
+
+- Distribute compiled applications through app stores
+- Sell or monetize applications based on this code
+- Create commercial competing products
+- Use in commercial products without explicit permission
+
+## 2. Commercial License (for App Store Distribution)
+
+### Proprietary Commercial License
+
+The compiled mobile application "Auto Organize Me" and its distribution through
+app stores (Apple App Store, Google Play Store, etc.) is governed by the
+following commercial license:
+
+**All Rights Reserved**: The copyright holder retains all rights to the
+compiled application and its commercial distribution.
+
+**Commercial Distribution**: Only the original copyright holder has the right to:
+
+- Distribute the application through commercial app stores
+- Sell or monetize the compiled application
+- Create commercial derivatives for sale
+- License the commercial rights to third parties
+
+**Third-Party Commercial Use**: Any commercial use, including but not limited to
+app store distribution, selling, or monetizing applications based on this code
+requires a separate commercial license agreement with the copyright holder.
+
+## 3. License Selection
+
+- **For Contributors**: Use the MIT License terms (Section 1) for development and contributions
+- **For Commercial Use**: Contact the copyright holder for commercial licensing terms
+- **For App Store Distribution**: Only authorized by the copyright holder under the commercial license
+
+## 4. Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+## 5. Contact
+
+For commercial licensing inquiries, please contact: gercamjr.dev@gmail.com

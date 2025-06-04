@@ -26,6 +26,7 @@
 Auto Organize Me is a mobile application built specifically for independent auto mechanics and small auto repair shops. The app provides a centralized platform for managing core aspects of an auto mechanic's work, including customer management, task tracking, invoicing, scheduling, and photo documentation.
 
 **Key Benefits:**
+
 - ⚡ Fully offline functionality - no internet required
 - 📱 Modern, intuitive interface with dark theme
 - 🔒 Local data storage for privacy and security
@@ -35,36 +36,42 @@ Auto Organize Me is a mobile application built specifically for independent auto
 ## ✨ Features
 
 ### 👥 Customer Management
+
 - Add, edit, and view customer profiles
 - Store comprehensive customer details (name, contact info, address)
 - Manage multiple vehicles per customer
 - Track vehicle specifications (make, model, year, VIN, engine type)
 
 ### 📝 Task Management
+
 - Create, edit, and organize repair tasks
 - Categorize tasks (Repairs, Maintenance, Diagnostics)
 - Track task status (To Do, In Progress, Awaiting Parts, Completed, Cancelled)
 - Associate tasks with specific customers and vehicles
 
 ### 💰 Invoice Management
+
 - Generate professional invoices from completed tasks
 - Detailed cost breakdown (parts and labor)
 - Track payment status (Unpaid, Partially Paid, Paid)
 - Customer and vehicle information integration
 
 ### 📅 Scheduling
+
 - Calendar view for job scheduling
 - Assign tasks to specific time slots
 - Multiple view options (day, week, month)
 - Visual scheduling interface
 
 ### 📸 Photo Documentation
+
 - Capture photos using device camera
 - Associate photos with vehicles and specific tasks
 - Document pre-repair conditions and completed work
 - Secure local photo storage
 
 ### 🚗 Vehicle Management
+
 - Comprehensive vehicle database
 - Track vehicle history and maintenance
 - Multiple vehicles per customer support
@@ -72,11 +79,12 @@ Auto Organize Me is a mobile application built specifically for independent auto
 
 ## 📱 Screenshots
 
-*Coming soon - Screenshots will be added once the app is fully developed*
+_Coming soon - Screenshots will be added once the app is fully developed_
 
 ## 🚀 Installation
 
 ### Prerequisites
+
 - Node.js (v14 or higher)
 - npm or yarn
 - Expo CLI
@@ -85,29 +93,33 @@ Auto Organize Me is a mobile application built specifically for independent auto
 ### Quick Start
 
 1. **Clone the repository**
+
    ```bash
    git clone <your-repository-url>
    cd "Auto Organize Me Mobile App/auto-organize-me"
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npm start
    ```
 
 4. **Run on your preferred platform**
+
    ```bash
    # For iOS
    npm run ios
-   
+
    # For Android
    npm run android
-   
+
    # For Web
    npm run web
    ```
@@ -117,11 +129,13 @@ Auto Organize Me is a mobile application built specifically for independent auto
 ### Environment Setup
 
 1. **Install Expo CLI globally**
+
    ```bash
    npm install -g @expo/cli
    ```
 
 2. **Install dependencies**
+
    ```bash
    cd auto-organize-me
    npm install
@@ -163,21 +177,25 @@ Auto Organize Me is a mobile application built specifically for independent auto
 ## 🔧 Tech Stack
 
 ### Frontend
+
 - **React Native** (0.79.2) - Cross-platform mobile development
 - **Expo** (53.0.9) - Development platform and tools
 - **React Navigation** (7.x) - Navigation library
 - **React** (19.0.0) - UI library
 
 ### Database & Storage
+
 - **Expo SQLite** - Local database storage
 - **AsyncStorage** - Key-value storage for app settings
 
 ### UI & Styling
-- **Custom Orbitron Font Family** - Modern, techy typography
+
+- **Custom Inter Font Family** - Modern, professional typography
 - **Dark Theme** - Professional appearance
 - **React Native Gesture Handler** - Touch interactions
 
 ### Utilities
+
 - **UUID** - Unique identifier generation
 - **Date Time Picker** - Date and time selection
 - **Expo Camera** - Photo capture functionality
@@ -185,6 +203,7 @@ Auto Organize Me is a mobile application built specifically for independent auto
 ## 🏗️ Architecture
 
 ### Project Structure
+
 ```
 auto-organize-me/
 ├── src/
@@ -208,6 +227,7 @@ auto-organize-me/
 ```
 
 ### Design Patterns
+
 - **Component-based architecture** for reusability
 - **Custom hooks** for shared logic
 - **Local-first data storage** for offline functionality
@@ -227,8 +247,9 @@ The app uses SQLite for local data storage with the following main entities:
 ## 🚧 Development Status
 
 ### Current MVP Includes:
+
 - ✅ Customer Management
-- ✅ Vehicle Management  
+- ✅ Vehicle Management
 - ✅ Task Management
 - ✅ Invoice Management
 - ✅ Basic Scheduling
@@ -237,6 +258,7 @@ The app uses SQLite for local data storage with the following main entities:
 - ✅ Offline Functionality
 
 ### Future Enhancements:
+
 - 🔄 Cloud synchronization and backup
 - 👥 Multi-user support
 - 📊 Reporting and analytics
@@ -255,6 +277,7 @@ We welcome contributions! Please follow these steps:
 5. Open a Pull Request
 
 ### Development Guidelines
+
 - Follow React Native best practices
 - Maintain the existing code style
 - Test on both iOS and Android platforms
@@ -275,4 +298,4 @@ For questions, issues, or feature requests:
 
 **Built with ❤️ for the automotive repair community**
 
-*Auto Organize Me - Streamlining automotive workflows, one repair at a time.*
+_Auto Organize Me - Streamlining automotive workflows, one repair at a time._

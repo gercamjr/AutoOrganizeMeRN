@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: SIZES.base,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
   },

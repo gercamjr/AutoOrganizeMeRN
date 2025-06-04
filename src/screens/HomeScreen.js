@@ -55,14 +55,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background, // Use COLORS from theme
   },
   title: {
-    fontFamily: FONTS.orbitronBold, // Use FONTS from theme
+    fontFamily: FONTS.bold, // Updated to Inter font
     fontSize: SIZES.h1, // Use SIZES from theme
     color: COLORS.primary, // Use COLORS from theme
     textAlign: "center",
     marginBottom: SIZES.padding, // Use SIZES from theme
   },
   subtitle: {
-    fontFamily: FONTS.orbitronRegular, // Use FONTS from theme
+    fontFamily: FONTS.regular, // Updated to Inter font
     fontSize: SIZES.body3, // Use SIZES from theme
     color: COLORS.textSecondary, // Use COLORS from theme
     textAlign: "center",
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     // If AppButton allows passing textStyle
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold, // Updated to Inter font
   },
 });
 

@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: SIZES.base,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
   },
@@ -209,13 +209,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   vehicleName: {
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     fontSize: SIZES.large,
     color: COLORS.text,
     marginBottom: SIZES.base,
   },
   vehicleDetail: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
     marginBottom: SIZES.base / 2,
@@ -226,11 +226,11 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     // color: COLORS.white, // AppButton variant handles this
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
   },
   noItemsText: {
     textAlign: "center",
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.body3,
     color: COLORS.text,
   },
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: "center",
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.error,
     marginBottom: SIZES.padding,

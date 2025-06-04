@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionTitle: {
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
     fontSize: SIZES.large,
     color: COLORS.text,
     marginTop: SIZES.padding,
@@ -593,14 +593,14 @@ const styles = StyleSheet.create({
   },
   removeButtonText: {
     color: COLORS.white,
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
     fontSize: SIZES.small,
   },
   addLineButton: {
     marginVertical: SIZES.base,
   },
   totalAmountText: {
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     fontSize: SIZES.large,
     color: COLORS.primary,
     textAlign: "right",
@@ -620,14 +620,14 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SIZES.base,
     color: COLORS.text,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
   },
   customerSelector: {
     marginBottom: SIZES.padding,
   },
   label: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     color: COLORS.textSecondary,
     marginBottom: SIZES.extraSmall,
     marginLeft: SIZES.tiny,
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
   customerSelectorText: {
     flex: 1,
     fontSize: SIZES.medium,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.text,
   },
   placeholderText: {
@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
   },
   taskSelectorButtonText: {
     color: COLORS.white,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     fontSize: SIZES.small,
   },
   modalOverlay: {
@@ -698,7 +698,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.large,
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     color: COLORS.text,
     textAlign: "center",
     marginBottom: SIZES.padding,
@@ -717,13 +717,13 @@ const styles = StyleSheet.create({
   },
   customerName: {
     fontSize: SIZES.medium,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     color: COLORS.text,
     marginBottom: SIZES.tiny,
   },
   customerDetails: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
   },
   taskList: {
@@ -737,19 +737,19 @@ const styles = StyleSheet.create({
   },
   taskTitle: {
     fontSize: SIZES.medium,
-    fontFamily: FONTS.orbitronMedium,
+    fontFamily: FONTS.medium,
     color: COLORS.text,
     marginBottom: SIZES.tiny,
   },
   taskDetails: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     marginBottom: SIZES.tiny,
   },
   taskDescription: {
     fontSize: SIZES.small,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     color: COLORS.textSecondary,
     fontStyle: "italic",
   },
@@ -770,7 +770,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   pickerItem: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
   },
   spacer: {
     height: SIZES.base,

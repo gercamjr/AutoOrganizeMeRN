@@ -1,9 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ScreenWrapper, AppButton, Card } from '../../components/common';
-import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { getCustomers, deleteCustomer } from '../../database/database';
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { ScreenWrapper, AppButton, Card } from "../../components/common";
+import { COLORS, FONTS, SIZES } from "../../constants/theme";
+import { getCustomers, deleteCustomer } from "../../database/database";
 
 const CustomerListScreen = () => {
   const navigation = useNavigation();
@@ -16,8 +24,8 @@ const CustomerListScreen = () => {
       const fetchedCustomers = await getCustomers();
       setCustomers(fetchedCustomers);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load customers.');
-      console.error('Failed to load customers:', error);
+      Alert.alert("Error", "Failed to load customers.");
+      console.error("Failed to load customers:", error);
     } finally {
       setIsLoading(false);
     }
@@ -30,31 +38,34 @@ const CustomerListScreen = () => {
   );
 
   const handleAddCustomer = () => {
-    navigation.navigate('AddEditCustomer');
+    navigation.navigate("AddEditCustomer");
   };
 
   const handleEditCustomer = (customer) => {
-    navigation.navigate('AddEditCustomer', { customerId: customer.id });
+    navigation.navigate("AddEditCustomer", { customerId: customer.id });
   };
 
   const handleDeleteCustomer = (id) => {
     Alert.alert(
-      'Delete Customer',
-      'Are you sure you want to delete this customer and all associated data (vehicles, tasks, invoices, photos)? This action cannot be undone.',
+      "Delete Customer",
+      "Are you sure you want to delete this customer and all associated data (vehicles, tasks, invoices, photos)? This action cannot be undone.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             setIsLoading(true);
             try {
               await deleteCustomer(id);
-              Alert.alert('Success', 'Customer deleted successfully.');
+              Alert.alert("Success", "Customer deleted successfully.");
               loadCustomers(); // Refresh the list
             } catch (error) {
-              Alert.alert('Error', `Failed to delete customer: ${error.message}`);
-              console.error('Failed to delete customer:', error);
+              Alert.alert(
+                "Error",
+                `Failed to delete customer: ${error.message}`
+              );
+              console.error("Failed to delete customer:", error);
             } finally {
               setIsLoading(false);
             }
@@ -66,16 +77,26 @@ const CustomerListScreen = () => {
 
   const renderCustomer = ({ item }) => (
     <Card style={styles.customerCard}>
-      <TouchableOpacity onPress={() => handleEditCustomer(item)} style={styles.cardContent}>
+      <TouchableOpacity
+        onPress={() => handleEditCustomer(item)}
+        style={styles.cardContent}
+      >
         <Text style={styles.customerName}>{item.name}</Text>
-        <Text style={styles.customerDetail}>Phone: {item.phone || 'N/A'}</Text>
-        <Text style={styles.customerDetail}>Email: {item.email || 'N/A'}</Text>
-        <Text style={styles.customerDetail}>Address: {item.address || 'N/A'}</Text>
+        <Text style={styles.customerDetail}>Phone: {item.phone || "N/A"}</Text>
+        <Text style={styles.customerDetail}>Email: {item.email || "N/A"}</Text>
+        <Text style={styles.customerDetail}>
+          Address: {item.address || "N/A"}
+        </Text>
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
         <AppButton
           title="View Vehicles"
-          onPress={() => navigation.navigate('VehicleList', { customerId: item.id, customerName: item.name })}
+          onPress={() =>
+            navigation.navigate("VehicleList", {
+              customerId: item.id,
+              customerName: item.name,
+            })
+          }
           style={styles.actionButton}
           textStyle={styles.actionButtonText}
           variant="info" // Or your desired variant
@@ -115,7 +136,9 @@ const CustomerListScreen = () => {
         />
         {customers.length === 0 && !isLoading && (
           <View style={styles.centeredMessageContainer}>
-            <Text style={styles.noCustomersText}>No customers found. Tap "Add New Customer" to get started!</Text>
+            <Text style={styles.noCustomersText}>
+              No customers found. Tap "Add New Customer" to get started!
+            </Text>
           </View>
         )}
         <FlatList
@@ -140,12 +163,12 @@ const styles = StyleSheet.create({
   },
   centeredMessageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: SIZES.base,
-    fontFamily: FONTS.orbitronRegular, // Corrected font
+    fontFamily: FONTS.regular, // Updated to Inter font
     fontSize: SIZES.font,
     color: COLORS.textSecondary, // Adjusted for better visibility than lightGray if needed
   },
@@ -162,26 +185,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   customerName: {
-    fontFamily: FONTS.orbitronBold, // Changed from FONTS.bold
+    fontFamily: FONTS.bold, // Updated to Inter font
     fontSize: SIZES.large, // Changed from SIZES.h3 to be explicit
     color: COLORS.text, // Changed from COLORS.light
     marginBottom: SIZES.base,
   },
   customerDetail: {
-    fontFamily: FONTS.orbitronRegular, // Changed from FONTS.regular
+    fontFamily: FONTS.regular, // Updated to Inter font
     fontSize: SIZES.font, // Changed from SIZES.body4
     color: COLORS.textSecondary, // Changed from COLORS.lightGray
     marginBottom: SIZES.base / 2,
   },
-  deleteButton: { // This style might be redundant now if using actionButton
+  deleteButton: {
+    // This style might be redundant now if using actionButton
     // marginTop: SIZES.base,
   },
-  deleteButtonText: { // This style might be redundant now if using actionButtonText
-    // fontFamily: FONTS.orbitronSemiBold,
+  deleteButtonText: {
+    // This style might be redundant now if using actionButtonText
+    // fontFamily: FONTS.semiBold,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around', // Or 'flex-end', 'space-between'
+    flexDirection: "row",
+    justifyContent: "space-around", // Or 'flex-end', 'space-between'
     paddingHorizontal: SIZES.padding,
     paddingBottom: SIZES.padding,
   },
@@ -190,12 +215,12 @@ const styles = StyleSheet.create({
     flex: 1, // Make buttons take equal width if desired
   },
   actionButtonText: {
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold, // Updated to Inter font
     // color: COLORS.white, // Handled by AppButton variant
   },
   noCustomersText: {
-    textAlign: 'center',
-    fontFamily: FONTS.orbitronRegular, // Corrected font
+    textAlign: "center",
+    fontFamily: FONTS.regular, // Updated to Inter font
     fontSize: SIZES.body3, // Kept SIZES.body3, can be increased if needed
     color: COLORS.text, // Changed from lightGray to text for better contrast
     paddingHorizontal: SIZES.padding * 2,

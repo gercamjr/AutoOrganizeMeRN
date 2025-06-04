@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: SIZES.base,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
   },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     textAlign: "center",
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.body3,
     color: COLORS.text,
     paddingHorizontal: SIZES.padding * 2,
@@ -198,13 +198,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   invoiceTitle: {
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     fontSize: SIZES.large,
     color: COLORS.text,
     marginBottom: SIZES.base,
   },
   invoiceDetail: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
     marginBottom: SIZES.base / 2,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginHorizontal: SIZES.base / 2,
   },
   actionButtonText: {
-    fontFamily: FONTS.orbitronSemiBold,
+    fontFamily: FONTS.semiBold,
   },
 });
 

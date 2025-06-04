@@ -1,10 +1,28 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { ScreenWrapper, AppButton, Card, AppTextInput } from '../../components/common'; // Reverted to barrel import
-import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { getAllVehiclesWithCustomerNames, deleteVehicle, getCustomers } from '../../database/database';
-import { Picker } from '@react-native-picker/picker'; // For customer filter dropdown
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  TextInput,
+} from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  ScreenWrapper,
+  AppButton,
+  Card,
+  AppTextInput,
+} from "../../components/common"; // Reverted to barrel import
+import { COLORS, FONTS, SIZES } from "../../constants/theme";
+import {
+  getAllVehiclesWithCustomerNames,
+  deleteVehicle,
+  getCustomers,
+} from "../../database/database";
+import { Picker } from "@react-native-picker/picker"; // For customer filter dropdown
 
 const AllVehiclesListScreen = () => {
   const navigation = useNavigation();
@@ -15,22 +33,25 @@ const AllVehiclesListScreen = () => {
 
   // Filter states
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
-  const [makeFilter, setMakeFilter] = useState('');
-  const [modelFilter, setModelFilter] = useState('');
+  const [makeFilter, setMakeFilter] = useState("");
+  const [modelFilter, setModelFilter] = useState("");
 
   const loadInitialData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [fetchedVehicles, fetchedCustomers] = await Promise.all([
         getAllVehiclesWithCustomerNames(),
-        getCustomers()
+        getCustomers(),
       ]);
       setAllVehicles(fetchedVehicles);
       setFilteredVehicles(fetchedVehicles); // Initially, filtered is all
-      setCustomers([{ id: null, name: 'All Customers' }, ...fetchedCustomers]); // Add "All Customers" option
+      setCustomers([{ id: null, name: "All Customers" }, ...fetchedCustomers]); // Add "All Customers" option
     } catch (error) {
-      Alert.alert('Error', 'Failed to load vehicles or customers.');
-      console.error('Failed to load initial data for AllVehiclesListScreen:', error);
+      Alert.alert("Error", "Failed to load vehicles or customers.");
+      console.error(
+        "Failed to load initial data for AllVehiclesListScreen:",
+        error
+      );
     } finally {
       setIsLoading(false);
     }
@@ -50,43 +71,52 @@ const AllVehiclesListScreen = () => {
   useEffect(() => {
     let tempVehicles = allVehicles;
     if (selectedCustomerId) {
-      tempVehicles = tempVehicles.filter(v => v.customerId === selectedCustomerId);
+      tempVehicles = tempVehicles.filter(
+        (v) => v.customerId === selectedCustomerId
+      );
     }
     if (makeFilter.trim()) {
-      tempVehicles = tempVehicles.filter(v => v.make.toLowerCase().includes(makeFilter.trim().toLowerCase()));
+      tempVehicles = tempVehicles.filter((v) =>
+        v.make.toLowerCase().includes(makeFilter.trim().toLowerCase())
+      );
     }
     if (modelFilter.trim()) {
-      tempVehicles = tempVehicles.filter(v => v.model.toLowerCase().includes(modelFilter.trim().toLowerCase()));
+      tempVehicles = tempVehicles.filter((v) =>
+        v.model.toLowerCase().includes(modelFilter.trim().toLowerCase())
+      );
     }
     setFilteredVehicles(tempVehicles);
   }, [selectedCustomerId, makeFilter, modelFilter, allVehicles]);
 
   const handleEditVehicle = (vehicle) => {
-    navigation.navigate('AddEditVehicle', { 
-      customerId: vehicle.customerId, 
+    navigation.navigate("AddEditVehicle", {
+      customerId: vehicle.customerId,
       customerName: vehicle.customerName, // Pass customerName for the AddEditVehicleScreen title
-      vehicleId: vehicle.id 
+      vehicleId: vehicle.id,
     });
   };
 
   const handleDeleteVehicle = (id) => {
     Alert.alert(
-      'Delete Vehicle',
-      'Are you sure you want to delete this vehicle? This action cannot be undone.',
+      "Delete Vehicle",
+      "Are you sure you want to delete this vehicle? This action cannot be undone.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             setIsLoading(true);
             try {
               await deleteVehicle(id);
-              Alert.alert('Success', 'Vehicle deleted successfully.');
+              Alert.alert("Success", "Vehicle deleted successfully.");
               loadInitialData(); // Refresh the list by reloading all data
             } catch (error) {
-              Alert.alert('Error', `Failed to delete vehicle: ${error.message}`);
-              console.error('Failed to delete vehicle:', error);
+              Alert.alert(
+                "Error",
+                `Failed to delete vehicle: ${error.message}`
+              );
+              console.error("Failed to delete vehicle:", error);
             } finally {
               setIsLoading(false);
             }
@@ -98,11 +128,18 @@ const AllVehiclesListScreen = () => {
 
   const renderVehicle = ({ item }) => (
     <Card style={styles.vehicleCard}>
-      <TouchableOpacity onPress={() => handleEditVehicle(item)} style={styles.cardContent}>
-        <Text style={styles.vehicleName}>{item.year} {item.make} {item.model}</Text>
+      <TouchableOpacity
+        onPress={() => handleEditVehicle(item)}
+        style={styles.cardContent}
+      >
+        <Text style={styles.vehicleName}>
+          {item.year} {item.make} {item.model}
+        </Text>
         <Text style={styles.customerNameText}>Owner: {item.customerName}</Text>
-        <Text style={styles.vehicleDetail}>VIN: {item.vin || 'N/A'}</Text>
-        <Text style={styles.vehicleDetail}>Engine: {item.engineType || 'N/A'}</Text>
+        <Text style={styles.vehicleDetail}>VIN: {item.vin || "N/A"}</Text>
+        <Text style={styles.vehicleDetail}>
+          Engine: {item.engineType || "N/A"}
+        </Text>
       </TouchableOpacity>
       <AppButton
         title="Delete"
@@ -113,11 +150,11 @@ const AllVehiclesListScreen = () => {
       />
     </Card>
   );
-  
+
   const clearFilters = () => {
     setSelectedCustomerId(null);
-    setMakeFilter('');
-    setModelFilter('');
+    setMakeFilter("");
+    setModelFilter("");
   };
 
   if (isLoading && allVehicles.length === 0) {
@@ -135,16 +172,23 @@ const AllVehiclesListScreen = () => {
     <ScreenWrapper>
       <View style={styles.filterContainer}>
         <View style={styles.pickerWrapper}>
-            <Picker
-                mode="dropdown" // Changed to dropdown mode
-                selectedValue={selectedCustomerId}
-                onValueChange={(itemValue) => setSelectedCustomerId(itemValue)}
-                style={styles.picker}
-                itemStyle={{ color: COLORS.text, fontSize: SIZES.font }} // Refactored: Added for iOS item styling consistency
-                dropdownIconColor={COLORS.text}
-            >
-                {customers.map(c => <Picker.Item key={c.id || 'all'} label={c.name} value={c.id} color={COLORS.text} />)}
-            </Picker>
+          <Picker
+            mode="dropdown" // Changed to dropdown mode
+            selectedValue={selectedCustomerId}
+            onValueChange={(itemValue) => setSelectedCustomerId(itemValue)}
+            style={styles.picker}
+            itemStyle={{ color: COLORS.text, fontSize: SIZES.font }} // Refactored: Added for iOS item styling consistency
+            dropdownIconColor={COLORS.text}
+          >
+            {customers.map((c) => (
+              <Picker.Item
+                key={c.id || "all"}
+                label={c.name}
+                value={c.id}
+                color={COLORS.text}
+              />
+            ))}
+          </Picker>
         </View>
         <AppTextInput
           placeholder="Filter by Make (e.g., Ford)"
@@ -158,12 +202,20 @@ const AllVehiclesListScreen = () => {
           onChangeText={setModelFilter}
           style={styles.filterInput}
         />
-        <AppButton title="Clear Filters" onPress={clearFilters} style={styles.clearButton} size="small" variant="transparent" />
+        <AppButton
+          title="Clear Filters"
+          onPress={clearFilters}
+          style={styles.clearButton}
+          size="small"
+          variant="transparent"
+        />
       </View>
 
       {filteredVehicles.length === 0 && !isLoading && (
         <View style={styles.centeredMessageContainer}>
-          <Text style={styles.noItemsText}>No vehicles found matching your criteria.</Text>
+          <Text style={styles.noItemsText}>
+            No vehicles found matching your criteria.
+          </Text>
         </View>
       )}
       <FlatList
@@ -196,7 +248,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: '100%',
+    width: "100%",
     color: COLORS.text, // Ensure picker text is visible
     backgroundColor: COLORS.surface, // Added background color for the picker itself
   },
@@ -210,13 +262,13 @@ const styles = StyleSheet.create({
   },
   centeredMessageContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: SIZES.padding * 2,
   },
   loadingText: {
     marginTop: SIZES.base,
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
   },
@@ -228,19 +280,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   vehicleName: {
-    fontFamily: FONTS.orbitronBold,
+    fontFamily: FONTS.bold,
     fontSize: SIZES.large,
     color: COLORS.text,
     marginBottom: SIZES.base,
   },
   customerNameText: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.small, // Smaller font for customer name
     color: COLORS.accent, // Use accent color for customer name
     marginBottom: SIZES.base / 2,
   },
   vehicleDetail: {
-    fontFamily: FONTS.orbitronRegular,
+    fontFamily: FONTS.regular,
     fontSize: SIZES.font,
     color: COLORS.textSecondary,
     marginBottom: SIZES.base / 2,
@@ -249,8 +301,8 @@ const styles = StyleSheet.create({
     marginTop: SIZES.base,
   },
   noItemsText: {
-    textAlign: 'center',
-    fontFamily: FONTS.orbitronRegular,
+    textAlign: "center",
+    fontFamily: FONTS.regular,
     fontSize: SIZES.body3,
     color: COLORS.text,
     marginTop: SIZES.padding * 2,

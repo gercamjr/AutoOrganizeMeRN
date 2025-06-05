@@ -53,8 +53,12 @@ jobs:
               echo "Build failed"
               exit 1
             fi
-            echo "Waiting 30 seconds before checking again..."
-            sleep 30
+            echo "Waiting $WAIT_TIME seconds before checking again..."
+            sleep $WAIT_TIME
+            WAIT_TIME=$((WAIT_TIME * 2))
+            if [[ $WAIT_TIME -gt 120 ]]; then
+              WAIT_TIME=120
+            fi
           done
 
       - name: Download APK

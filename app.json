@@ -49,13 +49,6 @@
         "projectId": "94704a42-9eff-43ae-8d11-2f1e892c5f8d"
       }
     },
-    "owner": "gercamjr.dev",
-    "build": {
-      "preview": {
-        "android": {
-          "buildType": "apk"
-        }
-      }
-    }
+    "owner": "gercamjr.dev"
   }
 }

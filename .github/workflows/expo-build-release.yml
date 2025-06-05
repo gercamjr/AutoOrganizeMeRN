@@ -1,0 +1,96 @@
+name: Expo Build
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Expo Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Extract version from package.json
+        id: package-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Build APK
+        run: |
+          echo "Building APK..."
+          BUILD_OUTPUT=$(npx eas build --platform android --profile preview --non-interactive --json)
+          BUILD_ID=$(echo $BUILD_OUTPUT | jq -r '.id')
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
+          echo "Waiting for build to complete..."
+          while true; do
+            BUILD_STATUS=$(npx eas build:get --id $BUILD_ID --non-interactive --json | jq -r '.status')
+            echo "Current build status: $BUILD_STATUS"
+            if [[ "$BUILD_STATUS" == "finished" ]]; then
+              break
+            elif [[ "$BUILD_STATUS" == "errored" ]]; then
+              echo "Build failed"
+              exit 1
+            fi
+            echo "Waiting $WAIT_TIME seconds before checking again..."
+            sleep $WAIT_TIME
+            WAIT_TIME=$((WAIT_TIME * 2))
+            if [[ $WAIT_TIME -gt 120 ]]; then
+              WAIT_TIME=120
+            fi
+          done
+
+      - name: Download APK
+        run: npx eas build:download --id $BUILD_ID --output=./app-preview.apk
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-preview-${{ env.VERSION }}
+          path: ./app-preview.apk
+          retention-days: 14
+
+      - name: Create Release
+        id: create_release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}-${{ env.BUILD_DATE }}
+          name: Release v${{ env.VERSION }} (${{ env.BUILD_DATE }})
+          draft: false
+          prerelease: false
+          files: ./app-preview.apk
+          body: |
+            ## Auto Organize Me App Preview Build
+
+            **Version:** ${{ env.VERSION }}
+            **Build Date:** ${{ env.BUILD_DATE }}
+
+            ### Installation
+            Download and install the APK on your Android device for testing.
+
+            ### Notes
+            This is an automated preview build from the main branch.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

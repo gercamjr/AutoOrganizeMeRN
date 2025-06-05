@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { ScreenWrapper, AppButton, Card } from "../../components/common";
+import {
+  ScreenWrapper,
+  AppButton,
+  Card,
+  AppTextInput,
+} from "../../components/common";
 import { COLORS, FONTS, SIZES } from "../../constants/theme";
 import { getCustomers, deleteCustomer } from "../../database/database";
 
@@ -17,6 +22,23 @@ const CustomerListScreen = () => {
   const navigation = useNavigation();
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Filter state
+  const [filterText, setFilterText] = useState("");
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  // Update filtered customers when filterText or customers changes
+  useEffect(() => {
+    if (!filterText.trim()) {
+      setFilteredCustomers(customers);
+    } else {
+      setFilteredCustomers(
+        customers.filter((c) =>
+          c.name.toLowerCase().includes(filterText.trim().toLowerCase())
+        )
+      );
+    }
+  }, [filterText, customers]);
+
+  const clearFilter = () => setFilterText("");
 
   const loadCustomers = useCallback(async () => {
     setIsLoading(true);
@@ -134,7 +156,24 @@ const CustomerListScreen = () => {
           style={styles.addButton}
           icon="plus-circle"
         />
-        {customers.length === 0 && !isLoading && (
+        <View style={styles.filterContainer}>
+          <AppTextInput
+            placeholder="Filter by Name"
+            value={filterText}
+            onChangeText={setFilterText}
+            style={styles.filterInput}
+          />
+          {filterText.length > 0 && (
+            <AppButton
+              title="Clear"
+              onPress={clearFilter}
+              style={styles.clearButton}
+              size="small"
+              variant="transparent"
+            />
+          )}
+        </View>
+        {filteredCustomers.length === 0 && !isLoading && (
           <View style={styles.centeredMessageContainer}>
             <Text style={styles.noCustomersText}>
               No customers found. Tap "Add New Customer" to get started!
@@ -142,7 +181,7 @@ const CustomerListScreen = () => {
           </View>
         )}
         <FlatList
-          data={customers}
+          data={filteredCustomers}
           renderItem={renderCustomer}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContentContainer}
@@ -227,6 +266,25 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingBottom: SIZES.padding,
+  },
+  filterContainer: {
+    paddingHorizontal: SIZES.padding,
+    paddingTop: SIZES.padding,
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    marginHorizontal: -SIZES.medium,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SIZES.base,
+    marginBottom: SIZES.base,
+  },
+  filterInput: {
+    flex: 1,
+    marginRight: SIZES.base,
+  },
+  clearButton: {
+    paddingHorizontal: SIZES.base,
   },
 });
 

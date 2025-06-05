@@ -9,7 +9,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { ScreenWrapper, AppButton, Card } from "../../components/common";
+import {
+  ScreenWrapper,
+  AppButton,
+  Card,
+  AppTextInput,
+} from "../../components/common";
 import { COLORS, FONTS, SIZES } from "../../constants/theme";
 import { getInvoices, deleteInvoice } from "../../database/database";
 
@@ -18,6 +23,25 @@ const InvoiceListScreen = ({ route }) => {
   const { customerId, customerName } = route.params || {}; // Optional: Filter invoices by customer
   const [invoices, setInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Filter state
+  const [filterText, setFilterText] = useState("");
+  const [filteredInvoices, setFilteredInvoices] = useState([]);
+  // Update filtered invoices when filterText or invoices changes
+  React.useEffect(() => {
+    if (!filterText.trim()) {
+      setFilteredInvoices(invoices);
+    } else {
+      setFilteredInvoices(
+        invoices.filter((inv) =>
+          (inv.customerName || "")
+            .toLowerCase()
+            .includes(filterText.trim().toLowerCase())
+        )
+      );
+    }
+  }, [filterText, invoices]);
+
+  const clearFilter = () => setFilterText("");
 
   const loadInvoices = useCallback(async () => {
     setIsLoading(true);
@@ -138,7 +162,24 @@ const InvoiceListScreen = ({ route }) => {
           style={styles.addButton}
           icon="plus-circle"
         />
-        {invoices.length === 0 && !isLoading && (
+        <View style={styles.filterContainer}>
+          <AppTextInput
+            placeholder="Filter by Customer Name"
+            value={filterText}
+            onChangeText={setFilterText}
+            style={styles.filterInput}
+          />
+          {filterText.length > 0 && (
+            <AppButton
+              title="Clear"
+              onPress={clearFilter}
+              style={styles.clearButton}
+              size="small"
+              variant="transparent"
+            />
+          )}
+        </View>
+        {filteredInvoices.length === 0 && !isLoading && (
           <View style={styles.centeredMessageContainer}>
             <Text style={styles.noDataText}>
               No invoices found. Tap "Add New Invoice" to get started!
@@ -146,7 +187,7 @@ const InvoiceListScreen = ({ route }) => {
           </View>
         )}
         <FlatList
-          data={invoices}
+          data={filteredInvoices}
           renderItem={renderInvoice}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.listContentContainer}
@@ -189,6 +230,25 @@ const styles = StyleSheet.create({
   },
   listContentContainer: {
     paddingBottom: SIZES.padding,
+  },
+  filterContainer: {
+    paddingHorizontal: SIZES.padding,
+    paddingTop: SIZES.padding,
+    backgroundColor: COLORS.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    marginHorizontal: -SIZES.medium,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SIZES.base,
+    marginBottom: SIZES.base,
+  },
+  filterInput: {
+    flex: 1,
+    marginRight: SIZES.base,
+  },
+  clearButton: {
+    paddingHorizontal: SIZES.base,
   },
   invoiceCard: {
     marginBottom: SIZES.medium,

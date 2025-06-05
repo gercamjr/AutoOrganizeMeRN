@@ -6,6 +6,7 @@ import CustomerListScreen from '../screens/CustomerManagement/CustomerListScreen
 import AddEditCustomerScreen from '../screens/CustomerManagement/AddEditCustomerScreen'
 import AddEditVehicleScreen from '../screens/VehicleManagement/AddEditVehicleScreen'
 import AllVehiclesListScreen from '../screens/VehicleManagement/AllVehiclesListScreen' // Added
+import VehicleListScreen from '../screens/VehicleManagement/VehicleListScreen'
 import TaskListScreen from '../screens/TaskManagement/TaskListScreen' // Added
 import AddEditTaskScreen from '../screens/TaskManagement/AddEditTaskScreen' // Added
 import InvoiceListScreen from '../screens/InvoiceManagement/InvoiceListScreen' // Added
@@ -47,6 +48,11 @@ const AppNavigator = () => {
           name='AllVehiclesList'
           component={AllVehiclesListScreen}
           options={{ title: 'All Vehicles' }}
+        />
+        <Stack.Screen
+          name='VehicleList'
+          component={VehicleListScreen}
+          // Title is set dynamically in VehicleListScreen
         />
         {/* Task Management Screens */}
         <Stack.Screen name='TaskList' component={TaskListScreen} options={{ title: 'Tasks' }} />

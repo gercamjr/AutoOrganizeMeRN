@@ -41,6 +41,10 @@ jobs:
 
       - name: Wait for build to complete
         run: |
+          echo "Building APK..."
+          BUILD_OUTPUT=$(npx eas build --platform android --profile preview --non-interactive --json)
+          BUILD_ID=$(echo $BUILD_OUTPUT | jq -r '.id')
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
           echo "Waiting for build to complete..."
           eas build:list --status in-queue --platform android --non-interactive --json > queue.json
           BUILD_ID=$(jq -r '.[0].id' queue.json)
@@ -51,12 +55,16 @@ jobs:
             if [[ "$STATUS" == "finished" ]]; then
               echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
               break
-            elif [[ "$STATUS" == "errored" ]]; then
+            elif [[ "$BUILD_STATUS" == "errored" ]]; then
               echo "Build failed"
               exit 1
             fi
-            echo "Waiting 30 seconds before checking again..."
-            sleep 30
+            echo "Waiting $WAIT_TIME seconds before checking again..."
+            sleep $WAIT_TIME
+            WAIT_TIME=$((WAIT_TIME * 2))
+            if [[ $WAIT_TIME -gt 120 ]]; then
+              WAIT_TIME=120
+            fi
           done
 
       - name: Download APK
@@ -72,7 +80,7 @@ jobs:
       - name: Create Release
         id: create_release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}-${{ env.BUILD_DATE }}
           name: Release v${{ env.VERSION }} (${{ env.BUILD_DATE }})

@@ -1,10 +1,7 @@
 name: Expo Build
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -20,14 +17,18 @@ jobs:
           node-version: 20
           cache: "npm"
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install EAS CLI globally
+        run: npm install -g eas-cli
+
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - name: Install dependencies
-        run: npm install
 
       - name: Extract version from package.json
         id: package-version
@@ -36,57 +37,66 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
+      - name: Verify EAS CLI installation
+        run: eas --version
+
       - name: Build APK
-        run: eas build --platform android --profile preview --non-interactive
+        run: |
+          echo "Starting Android build..."
+          eas build --platform android --profile preview --non-interactive --no-wait
+          echo "Build submitted successfully."
+
+      - name: Get latest build ID
+        run: |
+          sleep 10
+          echo "Fetching latest build ID..."
+          BUILD_ID=$(eas build:list --status in-progress --platform android --non-interactive --json | jq -r '.[0].id')
+          if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" == "null" ]; then
+            BUILD_ID=$(eas build:list --status queued --platform android --non-interactive --json | jq -r '.[0].id')
+          fi
+          echo "Latest build ID: $BUILD_ID"
+          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
 
       - name: Wait for build to complete
         run: |
-          echo "Building APK..."
-          BUILD_OUTPUT=$(npx eas build --platform android --profile preview --non-interactive --json)
-          BUILD_ID=$(echo $BUILD_OUTPUT | jq -r '.id')
-          echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
           echo "Waiting for build to complete..."
-          eas build:list --status in-queue --platform android --non-interactive --json > queue.json
-          BUILD_ID=$(jq -r '.[0].id' queue.json)
+          WAIT_TIME=30
           while true; do
-            eas build:list --id $BUILD_ID --non-interactive --json > build-status.json
-            STATUS=$(jq -r '.[0].status' build-status.json)
+            STATUS=$(eas build:view $BUILD_ID --non-interactive --json | jq -r '.status')
             echo "Current build status: $STATUS"
             if [[ "$STATUS" == "finished" ]]; then
-              echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
               break
-            elif [[ "$BUILD_STATUS" == "errored" ]]; then
+            elif [[ "$STATUS" == "errored" ]]; then
               echo "Build failed"
               exit 1
             fi
             echo "Waiting $WAIT_TIME seconds before checking again..."
             sleep $WAIT_TIME
-            WAIT_TIME=$((WAIT_TIME * 2))
-            if [[ $WAIT_TIME -gt 120 ]]; then
-              WAIT_TIME=120
-            fi
           done
 
       - name: Download APK
-        run: eas build:download --id $BUILD_ID --output=./app-preview.apk
+        run: |
+          mkdir -p artifacts
+          eas build:download --id $BUILD_ID --output=./artifacts/app-preview.apk
+          ls -la ./artifacts/
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-preview-${{ env.VERSION }}
-          path: ./app-preview.apk
+          path: ./artifacts/app-preview.apk
           retention-days: 14
 
       - name: Create Release
         id: create_release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION }}-${{ env.BUILD_DATE }}
           name: Release v${{ env.VERSION }} (${{ env.BUILD_DATE }})
           draft: false
           prerelease: false
-          files: ./app-preview.apk
+          files: ./artifacts/app-preview.apk
           body: |
             ## Auto Organize Me App Preview Build
 

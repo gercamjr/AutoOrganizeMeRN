@@ -20,15 +20,14 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
-
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm install
 
       - name: Extract version from package.json
         id: package-version
@@ -38,16 +37,23 @@ jobs:
           echo "BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Build APK
+        run: eas build --platform android --profile preview --non-interactive
+
+      - name: Wait for build to complete
         run: |
           echo "Building APK..."
           BUILD_OUTPUT=$(npx eas build --platform android --profile preview --non-interactive --json)
           BUILD_ID=$(echo $BUILD_OUTPUT | jq -r '.id')
           echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
           echo "Waiting for build to complete..."
+          eas build:list --status in-queue --platform android --non-interactive --json > queue.json
+          BUILD_ID=$(jq -r '.[0].id' queue.json)
           while true; do
-            BUILD_STATUS=$(npx eas build:get --id $BUILD_ID --non-interactive --json | jq -r '.status')
-            echo "Current build status: $BUILD_STATUS"
-            if [[ "$BUILD_STATUS" == "finished" ]]; then
+            eas build:list --id $BUILD_ID --non-interactive --json > build-status.json
+            STATUS=$(jq -r '.[0].status' build-status.json)
+            echo "Current build status: $STATUS"
+            if [[ "$STATUS" == "finished" ]]; then
+              echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
               break
             elif [[ "$BUILD_STATUS" == "errored" ]]; then
               echo "Build failed"
@@ -62,7 +68,7 @@ jobs:
           done
 
       - name: Download APK
-        run: npx eas build:download --id $BUILD_ID --output=./app-preview.apk
+        run: eas build:download --id $BUILD_ID --output=./app-preview.apk
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
